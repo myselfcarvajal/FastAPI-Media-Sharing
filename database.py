@@ -15,6 +15,7 @@ load_dotenv()
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
+
 class Base(DeclarativeBase):
     pass
 

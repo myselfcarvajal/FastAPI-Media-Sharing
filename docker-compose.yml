@@ -1,15 +1,43 @@
 services:
+  backend:
+    container_name: backend_media_sharing
+    build: .
+    ports:
+    - "8080:80"
+    environment:
+      #Database
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      #ImageKit
+      - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY}
+      - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY}
+      - IMAGEKIT_URL_ENDPOINT=${IMAGEKIT_URL_ENDPOINT}
+    depends_on:
+      - postgres
+    networks:
+      - media_sharing_network
+
   postgres:
     container_name: postgres_media_sharing
     image: postgres:17
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - ${POSTGRES_PORT}:5432
     volumes:
       - postgres_data_media:/var/lib/postgresql/data
+    networks:
+      - media_sharing_network
 
 volumes:
   postgres_data_media:
+
+networks:
+  media_sharing_network:
+    name: media_sharing_network
+    driver: bridge
